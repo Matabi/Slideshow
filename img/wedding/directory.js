@@ -1,4 +1,4 @@
-{ "slides": "wedding", "thumb": [
+slidesConfiguration["wedding"] = [
 "IMG_1360.jpg",
 "IMG_1361.jpg",
 "IMG_1365.jpg",
@@ -775,4 +775,4 @@
 "IMG_2551.jpg",
 "IMG_2552.jpg",
 "IMG_2553.jpg",
- null ]};
+ null ];

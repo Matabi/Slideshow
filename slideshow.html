@@ -111,6 +111,12 @@
     <!-- add swfobject.js -->
     <script type="text/javascript" src="swfobject/swfobject.js"></script>
       
+    <!-- slides -->
+    <script>
+        var slidesConfiguration = { pageSize: 8*4 };
+    </script>
+    <script type="text/javascript" src="img/wedding/directory.js"></script>
+      
     <div id="caption" style="display: none;">Download <a href="#">HD</a> / <a href="#">SD</a></div>
       
     <div id="wedding-images" style="display: none;">
@@ -159,13 +165,55 @@
       
     <script>
         
+        function initSlides2(slides) {
+            
+            var slidesControl = $("#slides-" + slides + "-container").find(".slides_control");
+            if ( slidesControl.length === 0 ) {
+                var thumbs = [];
+                var page   = 1;
+                var images = slidesConfiguration[slides];
+                var imgSrc = "";
+                for (var i=0; i < images.length; i++) {
+                    page = Math.ceil(i / slidesConfiguration.pageSize) + 1;
+                    thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid' src='" + ((page === 2) ? "img/" + slides + "/thumb/" + images[i] : "http://placehold.it/105x105") + "'></a>");
+                    if ( i % slidesConfiguration.pageSize === (slidesConfiguration.pageSize-1) ) {
+                        $('<div/>', { id: "slides-" + slides + "-page-" + page, html: thumbs.join('') }).appendTo("#slides-" + slides + "-container");
+                        thumbs = [];
+                    }
+                }
+                
+                $("#slides-" + slides).slides({
+                    animationComplete: function(page) {
+                        // Do something awesome!
+                        // console.log("Show page " + page);
+                    }
+                });
+                
+                $(".thumb-" + slides).fancybox({
+                    openEffect: "elastic",
+                    openSpeed: "fast",
+                    nextSpeed: "fast",
+                    beforeLoad: function() {
+                        var caption = $("#caption");
+                        var img = this.href.match(/(.*)(IMG_\d*\.jpg)/);
+                        var a1 = caption.find("a")[0];
+                        caption.find("a")[0].href = img[1] + "HD/" + img[2];
+                        caption.find("a")[1].href = this.href;
+                        this.title = caption.html();
+                    }
+                  });
+            }
+        }
+        
+        initSlides2("wedding");
+        
         if ( $.browser.msie && (document.documentMode < 8 || document.documentMode == undefined ) ) {
             alert("Sorry, your web browser is not fully supposted by this page.");
         }
         
         var slidesContainers = ["wedding", "honeymoon", "backstage"];
         
-        $("#slides-honeymoon").hide();
+        // $("#slides-honeymoon").hide();
         
         // initSlides("wedding");
         
@@ -189,44 +237,6 @@
         $("#poster-honeymoon").click(function() {
             // go to the first page
             $("#slides-honeymoon").find("a[href='#1']").click();
-        });
-        
-        $.getJSON('img/wedding/directory.json', function(data) {
-            
-            var thumbs = [];
-            var pageSize = 8*4;
-            
-            for (var i=0; i < data.thumb.length - 1; i++) {
-                thumbs.push("<a class='fancybox thumb-" + data.slides + "' rel='" + data.slides + "' href='img/" + data.slides + "/" + data.thumb[i] + "'><img class='img-polaroid' src='img/" + data.slides + "/thumb/" + data.thumb[i] + "'></a>");
-                if ( i % pageSize === (pageSize-1) ) {
-                    // new page
-                    $('<div/>', { html: thumbs.join('') }).appendTo("#slides-" + data.slides + "-container");
-                    thumbs = [];
-                }
-            }
-            
-            if ( thumbs.length > 0 ) {
-                // last page
-                $('<div/>', { html: thumbs.join('') }).appendTo("#slides-" + data.slides + "-container");
-            }
-            
-            $("#slides-" + data.slides).slides();
-            $(".thumb-" + data.slides).fancybox({
-                openEffect: "elastic",
-                openSpeed: "fast",
-                nextSpeed: "fast",
-                beforeLoad: function() {
-                    var caption = $("#caption");
-                    var img = this.href.match(/(.*)(IMG_\d*\.jpg)/);
-                    var a1 = caption.find("a")[0];
-                    caption.find("a")[0].href = img[1] + "HD/" + img[2];
-                    caption.find("a")[1].href = this.href;
-                    this.title = caption.html();
-                }
-              });
-            
-        }).error(function (data) {
-            alert("error: " + data.statusText);
         });
         
         $("#video-backstage-poster").click(function() {

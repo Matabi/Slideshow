@@ -1,7 +1,7 @@
 directory=$1
 subfolder=$2
-echo "{ "slides": \"$subfolder\", \"thumb\": [" > $directory/$subfolder/directory.json;
+echo "slidesConfiguration[\"$subfolder\"] = [" > $directory/$subfolder/directory.js;
 for f in `cd "$directory/$subfolder/thumb"; ls *.jpg`; do
-    echo "\"$f\"," >> $directory/$subfolder/directory.json;
+    echo "\"$f\"," >> $directory/$subfolder/directory.js;
 done;
-echo " null ]};" >> $directory/$subfolder/directory.json;
+echo " null ];" >> $directory/$subfolder/directory.js;

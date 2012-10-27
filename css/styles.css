@@ -32,3 +32,39 @@
 .pagination li.current a, .pagination li.current a:hover { background-position: 0 -13px }
 
 .pagination li a:hover { background-position: 0 -26px }
+
+body {
+    background-color: #e9eadc;
+}
+
+.slides_container {
+    width:940px;
+    height:470px;
+}
+.slides_container div {
+    width:940px;
+    height:470px;
+    display:block;
+}
+
+.img-polaroid {
+    margin-top: 2px;
+    margin-right: 2px;
+    -moz-box-shadow: 1px 1px 1px #999;
+    -webkit-box-shadow: 1px 1px 1px #999;
+    box-shadow: 1px 1px 1px #999;
+}
+        
+#menu {
+    margin-top: 70px;
+    margin-bottom: 0px;
+    font-family: 'Pacifico', cursive;
+}
+
+.thankyou {
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 48pt;
+}

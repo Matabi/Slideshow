@@ -54,6 +54,11 @@ body {
     -webkit-box-shadow: 1px 1px 1px #999;
     box-shadow: 1px 1px 1px #999;
 }
+
+.img-105x105 {
+    width: 105px;
+    height: 105px;
+}
         
 #menu {
     margin-top: 70px;

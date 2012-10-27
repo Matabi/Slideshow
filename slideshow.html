@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-<!--
-    for f in `ls *.jpg`; do echo "<a class='fancybox' rel='wedding' href='img/wedding/$f'><img class='img-polaroid' src='img/wedding/thumb/$f'></a>"; done
--->
     <title>Kristina &amp; Philippe Wedding</title>
       
     <meta name="robots" content="noindex">
@@ -12,9 +9,9 @@
     <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">  
+      
+    <!-- google font -->
     <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-    <style type="text/css" media="screen">
-    </style>
   </head>
   <body>
     <div class="container">
@@ -95,9 +92,9 @@
                 var imgSrc = "";
                 for (var i=0; i < images.length -1 ; i++) {
                     page = Math.ceil(i / slidesConfiguration.pageSize) + 1;
-                    thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid' src='" + ((i === 0 || page === 2) ? "img/" + slides + "/thumb/" + images[i] : "http://placehold.it/105x105") + "'></a>");
-                    if ( i % slidesConfiguration.pageSize === (slidesConfiguration.pageSize-1) || i === images.length-1 ) {
-                        $('<div/>', { id: "slides-" + slides + "-page-" + page, class: (page === 2) ? "img-loaded" : "", html: thumbs.join('') }).appendTo("#slides-" + slides + "-container");
+                    thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid img-105x105' src='" + ((i === 0 || page === 2) ? "img/" + slides + "/thumb/" + images[i] : "http://placehold.it/105x105") + "'></a>");
+                    if ( i % slidesConfiguration.pageSize === (slidesConfiguration.pageSize-1) || (i === images.length-1) ) {
+                        $('<div/>', { id: "slides-" + slides + "-page-" + page, html: thumbs.join('') }).appendTo("#slides-" + slides + "-container").addClass((page === 2) ? "img-loaded" : "");
                         thumbs = [];
                     }
                 }
@@ -117,8 +114,8 @@
                         var caption = $("#caption");
                         var img = this.href.match(/(.*)(IMG_\d*\.jpg)/);
                         var a1 = caption.find("a")[0];
-                        caption.find("a")[0].href = img[1] + "HD/" + img[2];
-                        caption.find("a")[1].href = this.href;
+                        caption.find("a")[0].href = img[1] + "hd/" + img[2];
+                        caption.find("a")[1].href = img[1] + "sd/" + img[2];
                         this.title = caption.html();
                     }
                   });
@@ -144,8 +141,6 @@
                 // load images of the next page
                 loadImages(pageNumber + 1);
             }
-            
-            console.log("Show page: " + pageNumber);
         }
         
         if ( $.browser.msie && (document.documentMode < 8 || document.documentMode == undefined ) ) {

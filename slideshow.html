@@ -18,7 +18,7 @@
     <ul id="menu" class="nav nav-pills">
         <li><a id="menu-wedding" href="#">wedding</a></li>
         <li><a id="menu-honeymoon" href="#">honeymoon</a></li>
-        <li><a id="menu-backstage" href="#">backstage</a></li>
+        <li><a id="menu-videos" href="#">videos</a></li>
     </ul>
         
       <div id="slides-wedding">
@@ -41,8 +41,8 @@
         <a href="#" class="next"><i class="icon-chevron-right icon-large"></i></a>  
       </div>    
         
-      <div id="slides-backstage" style="display: none;">
-        <div id="slides-backstage-container" class="slides_container">
+      <div id="slides-videos" style="display: none;">
+        <div id="slides-video-container" class="slides_container">
           <div id="video-backstage">
             <a href="#"><img id="video-backstage-poster" class="img-polaroid" src="img/backstage930x455.jpg"></a>
           </div>
@@ -90,6 +90,10 @@
                 var page   = 1;
                 var images = slidesConfiguration[slides];
                 var imgSrc = "";
+                if ( images == undefined ) {
+                    // no images
+                    return;
+                }
                 for (var i=0; i < images.length -1 ; i++) {
                     page = Math.ceil(i / slidesConfiguration.pageSize) + 1;
                     thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid img-105x105' src='" + ((i === 0 || page === 2) ? "img/" + slides + "/thumb/" + images[i] : "http://placehold.it/105x105") + "'></a>");
@@ -147,7 +151,7 @@
             alert("Sorry, your web browser is not fully supposted by this page.");
         }
         
-        var slidesContainers = ["wedding", "honeymoon", "backstage"];
+        var slidesContainers = ["wedding", "honeymoon", "videos"];
         
         $("#slides-honeymoon").hide();
         initSlides("wedding");
@@ -160,8 +164,8 @@
             hideSlides("honeymoon");
         });
 
-        $("#menu-backstage").click(function() { 
-            hideSlides("backstage");
+        $("#menu-videos").click(function() { 
+            hideSlides("videos");
         });
         
         $("#poster-wedding").click(function() {
@@ -216,7 +220,7 @@
                 video.id = "video-backstage-video";
                 $(video).attr({ width: "930", height: "455", controls: "" });
                 var source = document.createElement("source");
-                $(source).attr({ src: "video/material/Backstage 1080p.mp4", type: "video/mp4" });
+                $(source).attr({ src: "video/backstage.mp4", type: "video/mp4" });
                 video.appendChild(source);
                 source = document.createElement("source");
                 $(source).attr({ src: "video/backstage.webm", type: "video/webm" });

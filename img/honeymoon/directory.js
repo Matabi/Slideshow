@@ -112,9 +112,7 @@ slidesConfiguration["honeymoon"] = [
 "IMG_10700.jpg",
 "IMG_10712.jpg",
 "IMG_10714.jpg",
-"IMG_10719.jpg",
 "IMG_10721.jpg",
 "IMG_10726.jpg",
-"IMG_10735.jpg",
 "IMG_10738.jpg",
  null ];

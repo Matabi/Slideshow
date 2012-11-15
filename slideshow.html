@@ -46,6 +46,9 @@
           <div id="video-backstage">
             <a href="#"><img id="video-backstage-poster" class="img-polaroid" src="img/backstage930x455.jpg"></a>
           </div>
+          <div id="video-ceremony">
+            <a href="#"><img id="video-ceremony-poster" class="img-polaroid" src="img/ceremony930x455.jpg"></a>
+          </div>
         </div>
         <a href="#" class="prev"><i class="icon-chevron-left icon-large"></i></a>
         <a href="#" class="next"><i class="icon-chevron-right icon-large"></i></a>  
@@ -81,7 +84,10 @@
     <div id="caption" style="display: none;">Download <a href="#">HD</a> / <a href="#">SD</a></div>
       
     <script>
-        
+    
+        var slidesContainers = ["wedding", "honeymoon", "videos"];
+        var videos = ["backstage", "ceremony"];
+      
         function initSlides(slides) {
             
             var slidesControl = $("#slides-" + slides + "-container").find(".slides_control");
@@ -91,13 +97,29 @@
                 var images = slidesConfiguration[slides];
                 var imgSrc = "";
                 if ( images == undefined ) {
-                    // no images
+                    // no images => video
+                    var pagination = $("#slides-" + slides).find(".pagination");
+                    if ( pagination.length === 0 ) {
+                      // the slide needs to be initialized
+                      $("#slides-" + slides).slides({ 
+                        animationStart: function() {
+                          // stop the playing video if necessary
+                          for (var i=0; i < videos.length; i++) {
+                            if ( $("#video-" + videos[i] + "-video").length === 1 ) {
+                              $("#video-" + videos[i] + "-video")[0].pause();
+                            }
+                            else if ( swfobject.getObjectById("video-" + videos[i] + "-poster") ) {
+                              swfobject.getObjectById("video-" + videos[i] + "-poster").StopPlay();
+                            }
+                          }
+                        }});
+                    }
                     return;
                 }
                 for (var i=0; i < images.length -1 ; i++) {
                     page = Math.ceil(i / slidesConfiguration.pageSize) + 1;
-                    thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid img-105x105' src='" + ((i === 0 || page === 2) ? "img/" + slides + "/thumb/" + images[i] : "http://placehold.it/105x105") + "'></a>");
-                    if ( i % slidesConfiguration.pageSize === (slidesConfiguration.pageSize-1) || (i === images.length-1) ) {
+                    thumbs.push("<a class='fancybox thumb-" + slides + "' rel='" + slides + "' href='img/" + slides + "/" + images[i] + "'><img class='img-polaroid img-105x105' src='" + ((i === 0 || page === 2) ? "img/" + slides + "/thumb/" + images[i] : "img/105x105.gif") + "'></a>");
+                    if ( i % slidesConfiguration.pageSize === (slidesConfiguration.pageSize-1) || (i === images.length-2) ) {
                         $('<div/>', { id: "slides-" + slides + "-page-" + page, html: thumbs.join('') }).appendTo("#slides-" + slides + "-container").addClass((page === 2) ? "img-loaded" : "");
                         thumbs = [];
                     }
@@ -128,31 +150,29 @@
         
         function initSlidesPage(slidesContainer, pageNumber) {
             
-            function loadImages(pageNumber) {
-                $("#slides-wedding-page-" + pageNumber).find("img").each(function (index, image) {
+            function loadImages(slides, pageNumber) {
+                $("#slides-" + slides + "-page-" + pageNumber).find("img").each(function (index, image) {
                     var match = $(image).parent().attr("href").match(/(.*)\/([A-Z0-9_]*.jpg)/);
                     $(image).attr("src", match[1] + "/thumb/" + match[2]);
                 });
                 
-                $("#slides-" + slidesContainer.name + "-page-" + pageNumber).addClass("img-loaded");
+                $("#slides-" + slides + "-page-" + pageNumber).addClass("img-loaded");
             }
             
             if ( $("#slides-" + slidesContainer.name + "-page-" + pageNumber).hasClass("img-loaded") === false ) {
                 // load images of the current page
-                loadImages(pageNumber);
+                loadImages(slidesContainer.name, pageNumber);
             }
             else if ( $("#slides-" + slidesContainer.name + "-page-" + (pageNumber + 1)).hasClass("img-loaded") === false ) {
                 // load images of the next page
-                loadImages(pageNumber + 1);
+                loadImages(slidesContainer.name, pageNumber + 1);
             }
         }
         
         if ( $.browser.msie && (document.documentMode < 8 || document.documentMode == undefined ) ) {
-            alert("Sorry, your web browser is not fully supposted by this page.");
+            alert("Sorry, your web browser is not fully supported by this page.\nYou should upgarde your browser to the latest version.");
         }
-        
-        var slidesContainers = ["wedding", "honeymoon", "videos"];
-        
+      
         $("#slides-honeymoon").hide();
         initSlides("wedding");
         
@@ -197,40 +217,60 @@
             $("#slides-" + currentSlides).hide();
             $("#slides-" + newSlides).css('opacity',0).show().animate({opacity:1});
         }
+              
+        function showVideo(poster, name) {
         
-        $("#video-backstage-poster").click(function() {
-            var video = document.createElement("video");
-            if ( video.play === undefined ) {
-                // no HTML5 => use flash
-              var params = {
-                allowfullscreen: "true",
-                allowscriptaccess: "always",
-                loop: "false",
-                quality: "high"
-              };
-                
-              var flashvars = {
-                file: "video/backstage.mp4"
-              };
-                
-              swfobject.embedSWF("video/backstage.swf", "video-backstage-poster", "930", "455", "9.0.0", "swfobject/expressInstall.swf", flashvars, params);
-            }
-            else {
-                $(video).addClass("img-polaroid");
-                video.id = "video-backstage-video";
-                $(video).attr({ width: "930", height: "455", controls: "" });
-                var source = document.createElement("source");
-                $(source).attr({ src: "video/backstage.mp4", type: "video/mp4" });
-                video.appendChild(source);
-                source = document.createElement("source");
-                $(source).attr({ src: "video/backstage.webm", type: "video/webm" });
-                video.appendChild(source);
-                $("#video-backstage").append(video);
-                $(this).remove();
-                $("#video-backstage-video").bind("ended", function() { alert("ended"); });
-                video.play();
-            }
-        });
+          if ( $("#video-" + name + "-video").length === 1 ) {
+            // HTML 5 and the video already exists
+            $("#video-" + name + "-poster").css("display", "none");
+            $("#video-" + name + "-video").css("display", "block");
+            $("#video-" + name + "-video")[0].play();
+            return;
+          }
+        
+          var videoLocation = "http://www.she-said-yes.info/wd/video/"; // or "video/"
+          var video = document.createElement("video");
+          if ( video.play === undefined ) {
+            // no HTML5 => use flash
+            var params = {
+              allowfullscreen: "true",
+              allowscriptaccess: "always",
+              loop: "false",
+              quality: "high"
+            };
+              
+            var flashvars = {
+              file: "video/" + name + ".mp4"
+            };
+              
+            swfobject.embedSWF(videoLocation + name + ".swf", "video-" + name + "-poster", "930", "455", "9.0.0", "swfobject/expressInstall.swf", flashvars, params);
+          }
+          else {
+              $(video).addClass("img-polaroid");
+              video.id = "video-" + name + "-video";
+              $(video).attr({ width: "930", height: "455", controls: "" });
+              var source = document.createElement("source");
+              $(source).attr({ src: videoLocation + name + ".mp4", type: "video/mp4" });
+              video.appendChild(source);
+              source = document.createElement("source");
+              $(source).attr({ src: videoLocation + name + ".webm", type: "video/webm" });
+              video.appendChild(source);
+              $("#video-" + name).append(video);
+              $(poster).css("display", "none");
+              $("#video-" + name + "-video").bind("ended", function() {
+                var name = this.id.match(/video\-([a-z]*)\-video/)[1];
+                $("#video-" + name + "-video").css("display", "none");
+                $("#video-" + name + "-poster").css("display", "block");
+              });
+              video.play();
+          }
+        }
+        
+        $("#video-backstage-poster").click(function () {
+          showVideo(this, "backstage") });
+
+        $("#video-ceremony-poster").click(function () {
+          showVideo(this, "ceremony") });
         
     </script>
   

@@ -70,9 +70,9 @@
     <!-- Add fancyBox -->
     <link rel="stylesheet" href="fancybox/jquery.fancybox.css?v=2.1.2" type="text/css" media="screen" />
     <script type="text/javascript" src="fancybox/jquery.fancybox.pack.js?v=2.1.2"></script>
-      
-    <!-- add swfobject.js -->
-    <script type="text/javascript" src="swfobject/swfobject.js"></script>
+
+    <!-- add flowplayer -->
+    <script type="text/javascript" src="flowplayer/flowplayer-3.2.11.min.js"></script>
       
     <!-- slides -->
     <script>
@@ -87,6 +87,17 @@
     
         var slidesContainers = ["wedding", "honeymoon", "videos"];
         var videos = ["backstage", "ceremony"];
+        
+        function stopVideo() {
+          for (var i=0; i < videos.length; i++) {
+            if ( $("#video-" + videos[i] + "-video").length === 1 ) {
+              $("#video-" + videos[i] + "-video")[0].pause();
+            }
+            else if ( $("#video-" + name + "-player").length === 1 ) {
+              flowplayer($("#video-" + name + "-player").pause());
+            }
+          }
+        }
       
         function initSlides(slides) {
             
@@ -104,14 +115,7 @@
                       $("#slides-" + slides).slides({ 
                         animationStart: function() {
                           // stop the playing video if necessary
-                          for (var i=0; i < videos.length; i++) {
-                            if ( $("#video-" + videos[i] + "-video").length === 1 ) {
-                              $("#video-" + videos[i] + "-video")[0].pause();
-                            }
-                            else if ( swfobject.getObjectById("video-" + videos[i] + "-poster") ) {
-                              swfobject.getObjectById("video-" + videos[i] + "-poster").StopPlay();
-                            }
-                          }
+                          stopVideo();
                         }});
                     }
                     return;
@@ -199,6 +203,9 @@
         });
         
         function hideSlides(newSlides) {
+            
+            // stop the playing video if necessary
+            stopVideo();
         
             var currentSlides = null;
             for (var i=0; i < slidesContainers.length; i++) {
@@ -226,24 +233,18 @@
             $("#video-" + name + "-video").css("display", "block");
             $("#video-" + name + "-video")[0].play();
             return;
+          } else if ( $("#video-" + name + "-player").length === 1 ) {
+            // flash video player already exist
+            flowplayer($("#video-" + name + "-player").play());
           }
         
           var videoLocation = "http://www.she-said-yes.info/wd/video/"; // or "video/"
           var video = document.createElement("video");
           if ( video.play === undefined ) {
-            // no HTML5 => use flash
-            var params = {
-              allowfullscreen: "true",
-              allowscriptaccess: "always",
-              loop: "false",
-              quality: "high"
-            };
-              
-            var flashvars = {
-              file: "video/" + name + ".mp4"
-            };
-              
-            swfobject.embedSWF(videoLocation + name + ".swf", "video-" + name + "-poster", "930", "455", "9.0.0", "swfobject/expressInstall.swf", flashvars, params);
+            // no HTML5 => use flash (via flowplayer)
+            $('<a/>', { id: "video-" + name + "-player", style: "display:block; width: 930px; height: 455px", href: videoLocation + name + ".flv" }).appendTo("#video-" + name).addClass("img-polaroid");
+            flowplayer("video-" + name + "-player", "flowplayer/flowplayer-3.2.15.swf");  
+            $(poster).css("display", "none");
           }
           else {
               $(video).addClass("img-polaroid");
